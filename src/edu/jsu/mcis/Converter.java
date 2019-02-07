@@ -66,8 +66,43 @@ public class Converter {
             CSVReader reader = new CSVReader(new StringReader(csvString));
             List<String[]> full = reader.readAll();
             Iterator<String[]> iterator = full.iterator();
+     
+            JSONObject jsonObject = new JSONObject();
+            JSONArray colHeaders = new JSONArray();
+            JSONArray rowHeaders = new JSONArray();
+            JSONArray data = new JSONArray();
+            String [] result;
+            String [] keys = new String [3];
+            keys[0] = "colHeaders";
+            keys[1] = "rowHeaders";
+            keys[2] = "data";
             
-            // INSERT YOUR CODE HERE
+            String [] cols = iterator.next();
+            
+            for(String col : cols){
+                colHeaders.add(col);
+            }
+            
+            while(iterator.hasNext()){
+                result = iterator.next();
+                ArrayList<Integer> dataList = new ArrayList<>();
+                for(int i = 1; i < keys.length; ++i){
+                    for(int j = 0; j < result.length; ++j){
+                        if(i == 1 && j == 0){
+                            rowHeaders.add(result[j]);
+                        }         
+                        else if(i == 2 && j > 0){  
+                            dataList.add(Integer.parseInt(result[j]));
+                            
+                        }
+                    }
+                }
+                data.add(dataList);
+            }
+            jsonObject.put(keys[0], colHeaders);
+            jsonObject.put(keys[1], rowHeaders);
+            jsonObject.put(keys[2], data);
+            results = JSONValue.toJSONString(jsonObject);
             
         }        
         catch(Exception e) { return e.toString(); }
