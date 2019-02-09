@@ -55,7 +55,27 @@ public class Converter {
         Exchange" lecture notes for more details, including example code.
     
     */
+    public static final int NUM_FIELDS = 4;
+    public static final int NUM_FIELDS_W_ID = 5;
     
+    public static String[] getStringArray(ArrayList<String> arr){ 
+
+        String str[] = new String[arr.size()]; 
+   
+        Object[] objArr = arr.toArray(); 
+ 
+        int i = 0; 
+        for (Object obj : objArr) { 
+            str[i++] = (String)obj; 
+        } 
+  
+        return str; 
+    } 
+      
+      
+      
+      
+      
     @SuppressWarnings("unchecked")
     public static String csvToJson(String csvString) {
         
@@ -120,9 +140,49 @@ public class Converter {
             StringWriter writer = new StringWriter();
             CSVWriter csvWriter = new CSVWriter(writer, ',', '"', '\n');
             
-            // INSERT YOUR CODE HERE
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(jsonString);
+ 
+            ArrayList<String> colHeadersAL = (ArrayList)jsonObject.get("colHeaders");
+            ArrayList<String> rowHeadersAL = (ArrayList)jsonObject.get("rowHeaders");
+            ArrayList<String> dataAL = new ArrayList();
+            ArrayList<ArrayList> dataList = (ArrayList)jsonObject.get("data"); 
             
-        }
+            for(ArrayList a : dataList){
+                for(Object o : a){
+                    String s = o.toString();
+                    dataAL.add(s);
+                }
+            }
+            
+            String [] colHeaders = getStringArray(colHeadersAL);
+            String [] rowHeaders = getStringArray(rowHeadersAL);
+            String [] data = getStringArray(dataAL);
+            
+            
+            
+            csvWriter.writeNext(colHeaders);
+            
+            int addCounter = 0;
+            
+            for(int i = 0; i < rowHeaders.length; ++i){
+                String [] csvData = new String [NUM_FIELDS_W_ID];
+                csvData [0] = rowHeaders [i];
+                for(int j = 0; j < NUM_FIELDS; ++j){
+                    csvData[j + 1] = data [addCounter++];
+                }
+                
+                csvWriter.writeNext(csvData);    
+            }
+            
+            results = writer.toString();
+            
+            
+            
+            
+
+                       
+    }
         
         catch(Exception e) { return e.toString(); }
         
